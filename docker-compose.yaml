@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  web:
+    build:
+      context: web
+      dockerfile: Dockerfile
+    image: edsena/mtls-demo-web
+    network_mode: "service:proxy"
+    depends_on:
+      - proxy
+    restart: unless-stopped
+  proxy:
+    build:
+      context: envoy
+      dockerfile: Dockerfile
+    image: edsena/mtls-demo-proxy
+    ports:
+      - "9901:9901"
+      - "8081:8081"
+      - "8082:8082"
+      - "8083:8083"
+      - "8084:8084"
+    restart: unless-stopped
+networks:
+  public:
+    external: true

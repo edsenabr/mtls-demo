@@ -1,0 +1,135 @@
+admin:
+  access_log_path: /tmp/admin_access.log
+  address:
+    socket_address:
+      protocol: TCP
+      address: 127.0.0.1
+      port_value: 9901
+static_resources:
+  listeners:
+  # simple http listener
+  - name: http
+    address:
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: 8081
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          stat_prefix: ingress_http
+          use_remote_address: true
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: local_service
+              domains: ["*"]
+              routes:
+              - match:
+                  prefix: "/"
+                route:
+                  host_rewrite: mtls-demo
+                  cluster: mtls_demo
+          http_filters:
+          - name: envoy.filters.http.router
+  # simple https listener
+  - name: https
+    address:
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: 8082
+    filter_chains:
+    - transport_socket:
+        name: envoy.transport_sockets.tls
+        typed_config:
+          "@type": type.googleapis.com/envoy.api.v2.auth.DownstreamTlsContext
+          common_tls_context:
+            alpn_protocols: h2,http/1.1
+            tls_certificates:
+            - certificate_chain:
+                filename: /etc/envoy/server.pem
+              private_key:
+                filename: /etc/envoy/server.key
+      filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          stat_prefix: ingress_https
+          use_remote_address: true
+          route_config:
+            name: local_route_https
+            virtual_hosts:
+            - name: local_service_https
+              domains: ["*"]
+              routes:
+              - match:
+                  prefix: "/"
+                route:
+                  host_rewrite: mtls-demo
+                  cluster: mtls_demo
+          http_filters:
+          - name: envoy.filters.http.router
+
+  # mtls listener
+  - name: mtls
+    address:
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: 8083
+    filter_chains:
+    - transport_socket:
+        name: envoy.transport_sockets.tls
+        typed_config:
+          "@type": type.googleapis.com/envoy.api.v2.auth.DownstreamTlsContext
+          require_client_certificate: true
+          common_tls_context:
+            alpn_protocols: h2,http/1.1
+            tls_certificates:
+            - certificate_chain:
+                filename: /etc/envoy/server.pem
+              private_key:
+                filename: /etc/envoy/server.key
+            validation_context:
+              trusted_ca:
+                filename: /etc/envoy/ca.pem
+      filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          stat_prefix: ingress_mtls
+          use_remote_address: true
+          forward_client_cert_details: SANITIZE_SET
+          set_current_client_cert_details:
+            subject: true
+          route_config:
+            name: local_route_tls
+            virtual_hosts:
+            - name: local_service_tls
+              domains: ["*"]
+              routes:
+              - match:
+                  prefix: "/"
+                route:
+                  host_rewrite: mtls-demo
+                  cluster: mtls_demo
+          http_filters:
+          - name: envoy.filters.http.router
+  clusters:
+  - name: mtls_demo
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: mtls_demo
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 8080
