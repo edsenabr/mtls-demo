@@ -42,13 +42,13 @@ class EC2:
             echo 'version: "3.8"' > /home/ubuntu/docker-compose.yaml
             echo 'services:' >> /home/ubuntu/docker-compose.yaml
             echo '  web:' >> /home/ubuntu/docker-compose.yaml
-            echo '    image: edsena/mtls-demo-web' >> /home/ubuntu/docker-compose.yaml
+            echo '    image: %s/mtls-demo-web' >> /home/ubuntu/docker-compose.yaml
             echo '    network_mode: "service:proxy"' >> /home/ubuntu/docker-compose.yaml
             echo '    depends_on:' >> /home/ubuntu/docker-compose.yaml
             echo '      - proxy' >> /home/ubuntu/docker-compose.yaml
             echo '    restart: unless-stopped' >> /home/ubuntu/docker-compose.yaml
             echo '  proxy:' >> /home/ubuntu/docker-compose.yaml
-            echo '    image: edsena/mtls-demo-proxy' >> /home/ubuntu/docker-compose.yaml
+            echo '    image: %s/mtls-demo-proxy' >> /home/ubuntu/docker-compose.yaml
             echo '    ports:' >> /home/ubuntu/docker-compose.yaml
             echo '      - "9901:9901"' >> /home/ubuntu/docker-compose.yaml
             echo '      - "8081:8081"' >> /home/ubuntu/docker-compose.yaml
@@ -60,7 +60,8 @@ class EC2:
             echo '  public:' >> /home/ubuntu/docker-compose.yaml
             echo '    external: true' >> /home/ubuntu/docker-compose.yaml
             /usr/local/bin/docker-compose -f /home/ubuntu/docker-compose.yaml up
-        """)
+        """ % (stack.node.try_get_context("repository_prefix"), stack.node.try_get_context("repository_prefix"))
+        )
 
         # no key installed, use
         #

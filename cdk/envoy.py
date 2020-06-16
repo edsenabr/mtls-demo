@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 class Envoy:
-  def __init__(self, cluster) -> None:
+  def __init__(self, cluster, stack) -> None:
 
     app_label = {"app": "mtls-demo-envoy"}
 
@@ -18,7 +18,7 @@ class Envoy:
           "spec": {
             "containers": [{
               "name": "mtls-demo-proxy",
-              "image": "edsena/mtls-demo-proxy:latest",
+              "image": "%s/mtls-demo-proxy:latest" % stack.node.try_get_context("repository_prefix"),
               "ports": [
                 {"containerPort": 9901},
                 {"containerPort": 8081},
@@ -27,7 +27,7 @@ class Envoy:
               ]
             },{
               "name": "mtls-demo-web",
-              "image": "edsena/mtls-demo-web:latest",
+              "image": "%s/mtls-demo-web:latest" % stack.node.try_get_context("repository_prefix"),
               "ports": [{"containerPort": 8080}]
             }]
           }

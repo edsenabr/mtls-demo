@@ -23,4 +23,4 @@ if [[ ! -e certs/client.pem ]]; then
 fi
 
 #remove intermediate files
-rm certs/*.csr
+rm -f certs/*.csr

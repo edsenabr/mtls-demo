@@ -13,6 +13,7 @@ class Stack(core.Stack):
   def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
     super().__init__(scope, id, **kwargs)
 
+
     VPC = ec2.Vpc(
       self, 
       "vpc",
@@ -20,9 +21,13 @@ class Stack(core.Stack):
       max_azs=2,
       nat_gateways=1
     )
+    if bool(self.node.try_get_context("envoy_ec2")):
+      print ("Will deploy the Envoy@EC2 stack")
+      EC2(self,VPC)
 
-    EC2(self,VPC)
-    EKS(self,VPC)
+    if bool(self.node.try_get_context("envoy_eks")) or bool(self.node.try_get_context("ingress")):
+      print ("Will create the EKS Cluster")
+      EKS(self,VPC)
 
 app = core.App()
 

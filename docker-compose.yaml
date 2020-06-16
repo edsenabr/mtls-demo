@@ -4,7 +4,7 @@ services:
     build:
       context: web
       dockerfile: Dockerfile
-    image: edsena/mtls-demo-web
+    image: ${PREFIX:?Variable PREFIX not found}/mtls-demo-web
     network_mode: "service:proxy"
     depends_on:
       - proxy
@@ -13,7 +13,7 @@ services:
     build:
       context: .
       dockerfile: envoy/Dockerfile
-    image: edsena/mtls-demo-proxy
+    image: ${PREFIX:?Variable PREFIX not found}/mtls-demo-proxy
     ports:
       - "9901:9901"
       - "8081:8081"
