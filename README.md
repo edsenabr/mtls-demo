@@ -62,3 +62,5 @@ This solution adopts the *Infrastructure as Code* paradigm, and was built using 
 - [ingress.py](cdk/ingres.py): Ingress@EKS stack
 
 There's a helper [deploy.sh](deploy.sh) script on the root folder of this project to execute all the necessary steps for deploying this solution onto AWS Cloud. 
+
+If you're deploying using the image from Docker Hub, you can download the client certificates from [here](static/client-certificates.zip)
