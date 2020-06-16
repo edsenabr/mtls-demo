@@ -18,18 +18,20 @@ class Envoy:
           "spec": {
             "containers": [{
               "name": "mtls-demo-proxy",
-              "image": "%s/mtls-demo-proxy:latest" % stack.node.try_get_context("repository_prefix"),
+              "image": "%s/mtls-demo-proxy:latest" % stack.node.try_get_context("prefix"),
               "ports": [
                 {"containerPort": 9901},
                 {"containerPort": 8081},
                 {"containerPort": 8082},
                 {"containerPort": 8083}
-              ]
+              ],
+              "imagePullPolicy": "Always"
             },{
               "name": "mtls-demo-web",
-              "image": "%s/mtls-demo-web:latest" % stack.node.try_get_context("repository_prefix"),
-              "ports": [{"containerPort": 8080}]
-            }]
+              "image": "%s/mtls-demo-web:latest" % stack.node.try_get_context("prefix"),
+              "ports": [{"containerPort": 8080}],
+              "imagePullPolicy": "Always"
+            }],
           }
         }
       }

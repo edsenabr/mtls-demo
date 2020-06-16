@@ -37,8 +37,9 @@ class Ingress:
           "spec": {
             "containers": [{
               "name": "mtls-demo-web",
-              "image": "%s/mtls-demo-web:latest" % stack.node.try_get_context("repository_prefix"),
-              "ports": [{"containerPort": 8080}]
+              "image": "%s/mtls-demo-web:latest" % stack.node.try_get_context("prefix"),
+              "ports": [{"containerPort": 8080}],
+              "imagePullPolicy": "Always"
             }]
           }
         }

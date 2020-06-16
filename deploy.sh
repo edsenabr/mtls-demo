@@ -1,11 +1,11 @@
-#!/bin/bash
+cd#!/bin/bash
 
 __ask () {
   echo $1
   select yn in Yes No; do
       case $yn in
           Yes) 
-            export $2=True
+            export $2="--$2"
             break
           ;; 
           No)
@@ -52,9 +52,11 @@ if [[ ! -d .env ]]; then
 fi
 . .env/bin/activate
 pip install -r requirements.txt
-cdk synth -c repository_prefix=${PREFIX:-edsena} -c envoy_ec2=$envoy_ec2 -c envoy_eks=$envoy_eks -c ingress=$ingress
-cdk deploy -c repository_prefix=${PREFIX:-edsena} -c envoy_ec2=$envoy_ec2 -c envoy_eks=$envoy_eks -c ingress=$ingress --outputs-file outputs.json
+python3 ./context.py $envoy_ec2 $envoy_eks $ingress --prefix=${PREFIX:-edsena}
+cdk synth
+cdk deploy --outputs-file outputs.json
 deactivate
 popd
 
 echo "now you must wait a few minutes (usually 5) before running your tests, while the resources are loading"
+echo "you can run the ./status.sh script for monitor the resources"

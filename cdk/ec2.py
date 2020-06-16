@@ -60,7 +60,7 @@ class EC2:
             echo '  public:' >> /home/ubuntu/docker-compose.yaml
             echo '    external: true' >> /home/ubuntu/docker-compose.yaml
             /usr/local/bin/docker-compose -f /home/ubuntu/docker-compose.yaml up
-        """ % (stack.node.try_get_context("repository_prefix"), stack.node.try_get_context("repository_prefix"))
+        """ % (stack.node.try_get_context("prefix"), stack.node.try_get_context("prefix"))
         )
 
         # no key installed, use

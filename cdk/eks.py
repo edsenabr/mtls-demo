@@ -76,10 +76,10 @@ class EKS:
       }
     )
 
-    if bool(stack.node.try_get_context("ingress")):
+    if stack.node.try_get_context("ingress"):
       print ("Will deploy the Ingress stack")
       Ingress (cluster, stack)
 
-    if bool(stack.node.try_get_context("envoy_eks")):
+    if stack.node.try_get_context("envoy_eks"):
       print ("Will deploy the Envoy@EKS stack")
       Envoy(cluster, stack)

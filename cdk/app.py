@@ -21,11 +21,12 @@ class Stack(core.Stack):
       max_azs=2,
       nat_gateways=1
     )
-    if bool(self.node.try_get_context("envoy_ec2")):
+
+    if self.node.try_get_context("envoy_ec2"):
       print ("Will deploy the Envoy@EC2 stack")
       EC2(self,VPC)
 
-    if bool(self.node.try_get_context("envoy_eks")) or bool(self.node.try_get_context("ingress")):
+    if self.node.try_get_context("envoy_eks") or self.node.try_get_context("ingress"):
       print ("Will create the EKS Cluster")
       EKS(self,VPC)
 
