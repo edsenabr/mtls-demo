@@ -11,8 +11,8 @@ services:
     restart: unless-stopped
   proxy:
     build:
-      context: envoy
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: envoy/Dockerfile
     image: edsena/mtls-demo-proxy
     ports:
       - "9901:9901"

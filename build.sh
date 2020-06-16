@@ -5,11 +5,9 @@ pushd web
 ./mvnw clean package
 popd
 
-#generate the required certs
-pushd envoy
 ./generate-certs.sh
-docker build . -t edsena/mtls-demo-proxy
-popd
+
+docker-compose build
 
 #push images to docker.hub
 docker login
@@ -29,4 +27,4 @@ cdk deploy --outputs-file outputs.json
 deactivate
 popd
 
-echo "now you must wait a few minutes (usually 5) before running your tests, while the cloud-init finishes configuring the vm"
+echo "now you must wait a few minutes (usually 5) before running your tests, while the resources are loading"
